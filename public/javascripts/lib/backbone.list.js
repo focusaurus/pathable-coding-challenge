@@ -115,7 +115,6 @@ var List = Backbone.List = Backbone.View.extend({
   },
 
   render: function() {
-    this.$el = $(this.el);
     this.$el.html('');
     this.collection.each(function(model) {
       var view = this.findView(model);
