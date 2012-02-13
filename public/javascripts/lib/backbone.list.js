@@ -1,5 +1,9 @@
 (function($, undefined){
 
+function mid(model) {
+  return model.get(model.idAttribute);
+}
+
 var List = Backbone.List = Backbone.View.extend({
 
   initialize: function(options) {
@@ -26,9 +30,6 @@ var List = Backbone.List = Backbone.View.extend({
     this.render();
   },
 
-  _mid: function(model) {
-    return model.get(model.idAttribute);
-  },
 
   _makeView: function(model) {
     var viewClass = this.options.itemType || Backbone.View;
@@ -38,9 +39,9 @@ var List = Backbone.List = Backbone.View.extend({
       itemOptions.tagName = 'li';
     }
     var view = new viewClass(itemOptions);
-    var mid = this._mid(model);
-    if (mid) {
-      this._viewCache.byId[mid] = view;
+    var _mid = mid(model);
+    if (_mid) {
+      this._viewCache.byId[_mid] = view;
     }
     if (model.cid) {
       this._viewCache.byCid[model.cid] = view;
@@ -62,8 +63,8 @@ var List = Backbone.List = Backbone.View.extend({
     //View cid string
     if (model instanceof Backbone.Model) {
       //Check id first, then cid as a fallback
-      var mid = this._mid(model);
-      var view = this._viewCache.byId[mid];
+      var _mid = mid(model);
+      var view = this._viewCache.byId[_mid];
       if (view) { return view; }
       view = this._viewCache.byCid[model.cid];
       if (view) { return view; }
@@ -81,7 +82,7 @@ var List = Backbone.List = Backbone.View.extend({
       //OK, last ditch is locate the model object in the collection by ID
       //then find the cached view by object
       var model = this.collection.find(function (m) {
-        return this._mid(m) == model;
+        return mid(m) == model;
       }, this);
       if (model) {
         return _.find(_.values(this._viewCache.byViewCid), function(view) {
