@@ -609,6 +609,34 @@ var Model = Has.Model = Backbone.Model.extend({
 
 });
 
+var List = Backbone.List = Backbone.View.extend({
+
+  initialize: function(options) {
+    this.views = _.map(this.collection.models, function(model) {
+      return new Backbone.View({model: model, tagName: 'li'});
+    });
+  },
+
+  findView: function(model) {
+    return _.find(this.views, function(view) {
+      //TODO what is the most correct identity match here?
+      return view.model.id == model.id
+    });
+  },
+
+  render: function() {
+    //var $ = this.$;
+    var $container = $(this.el);
+    _.each(this.views, function(view) {
+      $container.append(view.render().el);
+    });
+    console.log("BUGBUG $container", $container);
+    return this;
+  },
+
+  tagName: 'ol'
+});
+
 function funcName(f) {
   if (!_.isFunction(f)) return '';
   if (f.name) return f.name;
