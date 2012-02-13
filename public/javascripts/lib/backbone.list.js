@@ -31,7 +31,9 @@ var List = Backbone.List = Backbone.View.extend({
   _makeView: function(model) {
     var viewClass = this.options.itemType || Backbone.View;
     var itemOptions = _.defaults(this.options.itemOptions || {}, {model: model});
-    if (/^(ol|li)$/i.test(this.tagName)) {
+    var ourTagIsList = /^(ol|li)$/i.test(this.tagName);
+    var viewTagIsDiv = (itemOptions.tagName || "div").toLowerCase() === 'div';
+    if (ourTagIsList && viewTagIsDiv) {
       itemOptions.tagName = 'li';
     }
     var view = new viewClass(itemOptions);
@@ -86,6 +88,12 @@ var List = Backbone.List = Backbone.View.extend({
     }
   },
 
+  _shouldWrap: function(view) {
+    var ourTagIsList = /^(ol|li)$/i.test(this.tagName);
+    var viewIsLi = view.tagName.toLowerCase() === 'li';
+    return ourTagIsList && !viewIsLi;
+  },
+
   findView: function(model) {
     var view = this._cached(model);
     if (!view && this.collection.include(model)) {
@@ -103,7 +111,12 @@ var List = Backbone.List = Backbone.View.extend({
     this.$el = $(this.el);
     this.$el.html('');
     this.collection.each(function(model) {
-      this.$el.append(this.findView(model).render().el);
+      var view = this.findView(model);
+      var parent = this.$el;
+      if (this._shouldWrap(view)) {
+        parent = this.$el.append($("<li/>"));
+      }
+      parent.append(view.render().el);
     }, this);
     return this;
   },
