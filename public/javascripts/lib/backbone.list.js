@@ -1,3 +1,5 @@
+(function($, undefined){
+
 var List = Backbone.List = Backbone.View.extend({
 
   initialize: function(options) {
@@ -131,3 +133,4 @@ var List = Backbone.List = Backbone.View.extend({
     this.selected = this.findView(model);
   }
 });
+})(jQuery);
