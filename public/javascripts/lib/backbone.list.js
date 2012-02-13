@@ -31,9 +31,8 @@ var List = Backbone.List = Backbone.View.extend({
   _makeView: function(model) {
     var viewClass = this.options.itemType || Backbone.View;
     var itemOptions = _.defaults(this.options.itemOptions || {}, {model: model});
-    var ourTagIsList = /^(ol|li)$/i.test(this.tagName);
     var viewTagIsDiv = (itemOptions.tagName || "div").toLowerCase() === 'div';
-    if (ourTagIsList && viewTagIsDiv) {
+    if (this._listTag() && viewTagIsDiv) {
       itemOptions.tagName = 'li';
     }
     var view = new viewClass(itemOptions);
@@ -88,10 +87,13 @@ var List = Backbone.List = Backbone.View.extend({
     }
   },
 
+  _listTag: function() {
+    return /^(ol|li)$/i.test(this.tagName);
+  },
+
   _shouldWrap: function(view) {
-    var ourTagIsList = /^(ol|li)$/i.test(this.tagName);
     var viewIsLi = view.tagName.toLowerCase() === 'li';
-    return ourTagIsList && !viewIsLi;
+    return this._listTag() && !viewIsLi;
   },
 
   findView: function(model) {
