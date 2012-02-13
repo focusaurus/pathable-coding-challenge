@@ -44,6 +44,9 @@ var List = Backbone.List = Backbone.View.extend({
       this._viewCache.byCid[model.cid] = view;
     }
     this._viewCache.byViewCid[view.cid] = view;
+    view.bind('all', function() {
+      this.trigger.apply(this, arguments);
+    }, this);
     return view;
   },
 
