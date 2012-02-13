@@ -1,4 +1,5 @@
-(function($, undefined){
+(function($, undefined) {
+
 //Private List methods
 function mid(model) {
   return model.get(model.idAttribute);
@@ -58,7 +59,6 @@ function cached(model) {
     if (view) { return view; }
     view = this._viewCache.byCid[model.cid];
     if (view) { return view; }
-    return null;
   } else {
     //Treat as an id number or string
     var caches = [this._viewCache.byId, this._viewCache.byCid,
@@ -79,7 +79,6 @@ function cached(model) {
         return view.model === model;
       });
     }
-    return null;
   }
 }
 
@@ -113,7 +112,6 @@ var List = Backbone.List = Backbone.View.extend({
     if (_.include(this.views, view)) {
       return view;
     }
-    return null;
   },
 
   render: function() {
