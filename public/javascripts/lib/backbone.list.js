@@ -96,8 +96,9 @@ var List = Backbone.List = Backbone.View.extend({
       }
     }, this);
     this.tagName = options.tagName || 'ol';
-    this.$el = $('<' + this.tagName + '/>');
-    this.el = this.$el.first();
+    //TODO use this.setElement when we upgrade to backbone 0.9.0
+    this.el = this.make(this.tagName);
+    this.$el = this.$(this.el);
     syncViews.apply(this);
   },
 
