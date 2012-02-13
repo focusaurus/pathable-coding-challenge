@@ -112,11 +112,12 @@ var List = Backbone.List = Backbone.View.extend({
     this.$el.html('');
     this.collection.each(function(model) {
       var view = this.findView(model);
-      var parent = this.$el;
+      var viewEl = view.render().el;
       if (this._shouldWrap(view)) {
-        parent = this.$el.append($("<li/>"));
+        this.$el.append($("<li>").html(viewEl));
+      } else {
+        this.$el.append(viewEl);
       }
-      parent.append(view.render().el);
     }, this);
     return this;
   },
