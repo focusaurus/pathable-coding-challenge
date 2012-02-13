@@ -17,7 +17,7 @@ function listTag() {
 function makeView(model) {
   var ViewClass = this.options.itemType || Backbone.View;
   var itemOptions = _.defaults(this.options.itemOptions || {}, {model: model});
-  var viewTagIsDiv = (itemOptions.tagName || "div").toLowerCase() === 'div';
+  var viewTagIsDiv = (itemOptions.tagName || 'div').toLowerCase() === 'div';
   if (listTag.apply(this) && viewTagIsDiv) {
     itemOptions.tagName = 'li';
   }
