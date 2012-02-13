@@ -1,7 +1,19 @@
 (function($, undefined){
-
+//Private List methods
 function mid(model) {
   return model.get(model.idAttribute);
+}
+
+function syncViews() {
+  this.views = this.collection.map(this.findView, this);
+  if (this.options.selectable) {
+    this.selected = null;
+  }
+  this.render();
+}
+
+function listTag() {
+  return /^(ol|li)$/i.test(this.tagName);
 }
 
 var List = Backbone.List = Backbone.View.extend({
@@ -9,7 +21,7 @@ var List = Backbone.List = Backbone.View.extend({
   initialize: function(options) {
     this._viewCache = {byId: {}, byCid: {}, byViewCid: {}};
     _.each(['add', 'remove', 'reset'], function(event) {
-      this.collection.bind(event, this._syncViews, this);
+      this.collection.bind(event, syncViews, this);
       if (options.selectable && event != 'add') {
         this.collection.bind(event, function() {
           this.selected = undefined;
@@ -19,23 +31,14 @@ var List = Backbone.List = Backbone.View.extend({
     this.tagName = options.tagName || 'ol';
     this.$el = $('<' + this.tagName + '/>');
     this.el = this.$el.first();
-    this._syncViews();
+    syncViews.apply(this);
   },
-
-  _syncViews: function() {
-    this.views = this.collection.map(this.findView, this);
-    if (this.options.selectable) {
-      this.selected = null;
-    }
-    this.render();
-  },
-
 
   _makeView: function(model) {
     var viewClass = this.options.itemType || Backbone.View;
     var itemOptions = _.defaults(this.options.itemOptions || {}, {model: model});
     var viewTagIsDiv = (itemOptions.tagName || "div").toLowerCase() === 'div';
-    if (this._listTag() && viewTagIsDiv) {
+    if (listTag.apply(this) && viewTagIsDiv) {
       itemOptions.tagName = 'li';
     }
     var view = new viewClass(itemOptions);
@@ -93,13 +96,11 @@ var List = Backbone.List = Backbone.View.extend({
     }
   },
 
-  _listTag: function() {
-    return /^(ol|li)$/i.test(this.tagName);
-  },
+
 
   _shouldWrap: function(view) {
     var viewIsLi = view.tagName.toLowerCase() === 'li';
-    return this._listTag() && !viewIsLi;
+    return listTag.apply(this) && !viewIsLi;
   },
 
   findView: function(model) {
