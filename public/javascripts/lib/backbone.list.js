@@ -76,7 +76,11 @@ var List = Backbone.List = Backbone.View.extend({
       //Build a new view on demand
       return this._makeView(model);
     }
-    return view;
+    //Don't find views that are not currently mapped to the collection
+    if (_.include(this.views, view)) {
+      return view;
+    }
+    return null;
   },
 
   render: function() {
