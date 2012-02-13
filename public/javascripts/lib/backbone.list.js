@@ -121,7 +121,7 @@ var List = Backbone.List = Backbone.View.extend({
       var view = this.findView(model);
       var viewEl = view.render().el;
       if (shouldWrap.call(this, view)) {
-        this.$el.append($("<li>").html(viewEl));
+        this.$el.append($(this.make('li')).html(viewEl));
       } else {
         this.$el.append(viewEl);
       }
