@@ -10,8 +10,10 @@ var List = Backbone.List = Backbone.View.extend({
         }, this);
       }
     }, this);
-    this._syncViews();
     this.tagName = options.tagName || 'ol';
+    this.$el = $('<' + this.tagName + '/>');
+    this.el = this.$el.first();
+    this._syncViews();
   },
 
   _syncViews: function() {
@@ -29,6 +31,9 @@ var List = Backbone.List = Backbone.View.extend({
   _makeView: function(model) {
     var viewClass = this.options.itemType || Backbone.View;
     var itemOptions = _.defaults(this.options.itemOptions || {}, {model: model});
+    if (/^(ol|li)$/i.test(this.tagName)) {
+      itemOptions.tagName = 'li';
+    }
     var view = new viewClass(itemOptions);
     var mid = this._mid(model);
     if (mid) {
