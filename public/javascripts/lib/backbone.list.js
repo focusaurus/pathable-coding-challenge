@@ -126,6 +126,8 @@ var List = Backbone.List = Backbone.View.extend({
       } else {
         this.$el.append(viewEl);
       }
+      //NOTE: I think there must be a cleaner way to do this...
+      view.delegateEvents();
     }, this);
     return this;
   },
