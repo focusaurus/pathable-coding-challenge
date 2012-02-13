@@ -8,8 +8,8 @@ var List = Backbone.List = Backbone.View.extend({
   },
 
   _viewFor: function(model) {
-
-    return new Backbone.View({model: model, tagName: 'li'});
+    var viewClass = this.options.itemType || Backbone.View;
+    return new viewClass({model: model});
   },
 
   findView: function(model) {
