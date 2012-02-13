@@ -11,6 +11,7 @@ var List = Backbone.List = Backbone.View.extend({
       }
     }, this);
     this._syncViews();
+    this.tagName = options.tagName || 'ol';
   },
 
   _syncViews: function() {
@@ -27,7 +28,8 @@ var List = Backbone.List = Backbone.View.extend({
 
   _makeView: function(model) {
     var viewClass = this.options.itemType || Backbone.View;
-    var view = new viewClass({model: model});
+    var itemOptions = _.defaults(this.options.itemOptions || {}, {model: model});
+    var view = new viewClass(itemOptions);
     var mid = this._mid(model);
     if (mid) {
       this._viewCache.byId[mid] = view;
@@ -93,17 +95,15 @@ var List = Backbone.List = Backbone.View.extend({
   },
 
   render: function() {
-    var $container = $(this.el);
-    $container.html('');
+    this.$el = $(this.el);
+    this.$el.html('');
     this.collection.each(function(model) {
-      $container.append(this.findView(model).render().el);
+      this.$el.append(this.findView(model).render().el);
     }, this);
     return this;
   },
 
   select: function(model) {
     this.selected = this.findView(model);
-  },
-
-  tagName: 'ol'
+  }
 });
