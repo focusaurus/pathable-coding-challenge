@@ -1,4 +1,4 @@
-(function($, undefined) {
+(function ($, undefined) {
 
 //Private List methods
 function mid(model) {
@@ -11,18 +11,18 @@ function syncViews() {
 }
 
 function listTag() {
-  return /^(ol|li)$/i.test(this.tagName);
+  return (/^(ol|li)$/i).test(this.tagName);
 }
 
 function makeView(model) {
-  var viewClass = this.options.itemType || Backbone.View;
+  var ViewClass = this.options.itemType || Backbone.View;
   var itemOptions = _.defaults(this.options.itemOptions || {}, {model: model});
   var viewTagIsDiv = (itemOptions.tagName || "div").toLowerCase() === 'div';
   if (listTag.apply(this) && viewTagIsDiv) {
     itemOptions.tagName = 'li';
   }
-  var view = new viewClass(itemOptions);
-  var _mid = mid(model);
+  var view = new ViewClass(itemOptions),
+      _mid = mid(model);
   if (_mid) {
     this._viewCache.byId[_mid] = view;
   }
@@ -30,7 +30,7 @@ function makeView(model) {
     this._viewCache.byCid[model.cid] = view;
   }
   this._viewCache.byViewCid[view.cid] = view;
-  view.bind('all', function() {
+  view.bind('all', function () {
     this.trigger.apply(this, arguments);
   }, this);
   return view;
@@ -60,7 +60,7 @@ function cached(model) {
     //Treat as an id number or string
     var caches = [this._viewCache.byId, this._viewCache.byCid,
       this._viewCache.byViewCid ];
-     var cache = _.find(caches, function(cache) {
+     var cache = _.find(caches, function (cache) {
       return cache[model];
     });
     if (cache) {
@@ -72,7 +72,7 @@ function cached(model) {
       return mid(m) == model;
     }, this);
     if (model) {
-      return _.find(_.values(this._viewCache.byViewCid), function(view) {
+      return _.find(_.values(this._viewCache.byViewCid), function (view) {
         return view.model === model;
       });
     }
@@ -81,14 +81,14 @@ function cached(model) {
 
 var List = Backbone.List = Backbone.View.extend({
 
-  constructor: function(options) {
+  constructor: function (options) {
     List.__super__.constructor.apply(this, arguments);
     this._viewCache = {byId: {}, byCid: {}, byViewCid: {}};
-    _.each(['add', 'remove', 'reset'], function(event) {
+    _.each(['add', 'remove', 'reset'], function (event) {
       this.collection.bind(event, syncViews, this);
     }, this);
-    _.each(['remove', 'reset'], function(event) {
-      this.collection.bind(event, function() {
+    _.each(['remove', 'reset'], function (event) {
+      this.collection.bind(event, function () {
         //clear selection if it is no longer part of the collection
         if (this.options.selectable && this.selected &&
               !this.findView(this.selected.model)) {
@@ -103,7 +103,7 @@ var List = Backbone.List = Backbone.View.extend({
     syncViews.apply(this);
   },
 
-  findView: function(model) {
+  findView: function (model) {
     var view = cached.call(this, model);
     if (!view && this.collection.include(model)) {
       //Build a new view on demand
@@ -115,9 +115,9 @@ var List = Backbone.List = Backbone.View.extend({
     }
   },
 
-  render: function() {
+  render: function () {
     this.$el.html('');
-    this.collection.each(function(model) {
+    this.collection.each(function (model) {
       var view = this.findView(model);
       var viewEl = view.render().el;
       if (shouldWrap.call(this, view)) {
@@ -131,8 +131,8 @@ var List = Backbone.List = Backbone.View.extend({
     return this;
   },
 
-  select: function(model) {
+  select: function (model) {
     this.selected = this.findView(model);
   }
 });
-})(jQuery);
+}(jQuery));
