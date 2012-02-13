@@ -10,6 +10,9 @@ var List = Backbone.List = Backbone.View.extend({
         }, this);
       }
     }, this);
+    this.tagName = options.tagName || 'ol';
+    this.$el = $('<' + this.tagName + '/>');
+    this.el = this.$el.first();
     this._syncViews();
   },
 
@@ -27,7 +30,13 @@ var List = Backbone.List = Backbone.View.extend({
 
   _makeView: function(model) {
     var viewClass = this.options.itemType || Backbone.View;
-    var view = new viewClass({model: model});
+    var itemOptions = _.defaults(this.options.itemOptions || {}, {model: model});
+    var ourTagIsList = /^(ol|li)$/i.test(this.tagName);
+    var viewTagIsDiv = (itemOptions.tagName || "div").toLowerCase() === 'div';
+    if (ourTagIsList && viewTagIsDiv) {
+      itemOptions.tagName = 'li';
+    }
+    var view = new viewClass(itemOptions);
     var mid = this._mid(model);
     if (mid) {
       this._viewCache.byId[mid] = view;
@@ -79,6 +88,12 @@ var List = Backbone.List = Backbone.View.extend({
     }
   },
 
+  _shouldWrap: function(view) {
+    var ourTagIsList = /^(ol|li)$/i.test(this.tagName);
+    var viewIsLi = view.tagName.toLowerCase() === 'li';
+    return ourTagIsList && !viewIsLi;
+  },
+
   findView: function(model) {
     var view = this._cached(model);
     if (!view && this.collection.include(model)) {
@@ -93,17 +108,21 @@ var List = Backbone.List = Backbone.View.extend({
   },
 
   render: function() {
-    var $container = $(this.el);
-    $container.html('');
+    this.$el = $(this.el);
+    this.$el.html('');
     this.collection.each(function(model) {
-      $container.append(this.findView(model).render().el);
+      var view = this.findView(model);
+      var viewEl = view.render().el;
+      if (this._shouldWrap(view)) {
+        this.$el.append($("<li>").html(viewEl));
+      } else {
+        this.$el.append(viewEl);
+      }
     }, this);
     return this;
   },
 
   select: function(model) {
     this.selected = this.findView(model);
-  },
-
-  tagName: 'ol'
+  }
 });
