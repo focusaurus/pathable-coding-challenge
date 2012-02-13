@@ -2,14 +2,22 @@ var List = Backbone.List = Backbone.View.extend({
 
   initialize: function(options) {
     this._viewCache = {byId: {}, byCid: {}, byViewCid: {}};
-    _.each(['add', 'remove', 'reset'], function(event){
+    _.each(['add', 'remove', 'reset'], function(event) {
       this.collection.bind(event, this._syncViews, this);
+      if (options.selectable && event != 'add') {
+        this.collection.bind(event, function() {
+          this.selected = undefined;
+        }, this);
+      }
     }, this);
     this._syncViews();
   },
 
   _syncViews: function() {
     this.views = this.collection.map(this.findView, this);
+    if (this.options.selectable) {
+      this.selected = null;
+    }
     this.render();
   },
 
@@ -91,6 +99,10 @@ var List = Backbone.List = Backbone.View.extend({
       $container.append(this.findView(model).render().el);
     }, this);
     return this;
+  },
+
+  select: function(model) {
+    this.selected = this.findView(model);
   },
 
   tagName: 'ol'
