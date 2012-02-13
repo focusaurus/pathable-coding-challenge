@@ -7,9 +7,6 @@ function mid(model) {
 
 function syncViews() {
   this.views = this.collection.map(this.findView, this);
-  if (this.options.selectable) {
-    this.selected = null;
-  }
   this.render();
 }
 
@@ -89,11 +86,15 @@ var List = Backbone.List = Backbone.View.extend({
     this._viewCache = {byId: {}, byCid: {}, byViewCid: {}};
     _.each(['add', 'remove', 'reset'], function(event) {
       this.collection.bind(event, syncViews, this);
-      if (options.selectable && event != 'add') {
-        this.collection.bind(event, function() {
+    }, this);
+    _.each(['remove', 'reset'], function(event) {
+      this.collection.bind(event, function() {
+        //clear selection if it is no longer part of the collection
+        if (this.options.selectable && this.selected &&
+              !this.findView(this.selected.model)) {
           this.selected = undefined;
-        }, this);
-      }
+        }
+      }, this);
     }, this);
     this.tagName = options.tagName || 'ol';
     //TODO use this.setElement when we upgrade to backbone 0.9.0
