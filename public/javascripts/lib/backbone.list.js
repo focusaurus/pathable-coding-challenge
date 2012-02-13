@@ -2,8 +2,9 @@ var List = Backbone.List = Backbone.View.extend({
 
   initialize: function(options) {
     this._viewCache = {byId: {}, byCid: {}, byViewCid: {}};
-    this.collection.bind('add', this._syncViews, this);
-    this.collection.bind('remove', this._syncViews, this);
+    _.each(['add', 'remove', 'reset'], function(event){
+      this.collection.bind(event, this._syncViews, this);
+    }, this);
     this._syncViews();
   },
 
