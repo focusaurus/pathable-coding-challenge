@@ -85,7 +85,8 @@ function cached(model) {
 
 var List = Backbone.List = Backbone.View.extend({
 
-  initialize: function(options) {
+  constructor: function(options) {
+    List.__super__.constructor.apply(this, arguments);
     this._viewCache = {byId: {}, byCid: {}, byViewCid: {}};
     _.each(['add', 'remove', 'reset'], function(event) {
       this.collection.bind(event, syncViews, this);
